@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import logo from "../../assets/logo.jpg";
 import { ModeToggle } from "../mode-toggle";
+import FacebookLoginButton from "../FacebookLoginButton";
 
 const Navbar = () => {
   return (
@@ -13,7 +14,8 @@ const Navbar = () => {
         />
         <h3 className="text-xl font-semibold text-gray-800">Task Master</h3>
       <Link to="/">Task</Link>
-      <Link to="/user">User</Link>
+        <Link to="/user">User</Link>
+        <FacebookLoginButton/>
       </div>
       <div>
         <ModeToggle/>
