@@ -1,4 +1,7 @@
 import { useEffect } from "react";
+import { useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { setFacebookUser } from "@/redux/features/user/userSlice";
 
 declare global {
   interface Window {
@@ -8,8 +11,11 @@ declare global {
 }
 
 const FacebookLoginButton = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+
   useEffect(() => {
-    // Load the Facebook SDK
     (function (d, s, id) {
       if (d.getElementById(id)) return;
       let js = d.createElement(s) as HTMLScriptElement;
@@ -18,7 +24,6 @@ const FacebookLoginButton = () => {
       d.head.appendChild(js);
     })(document, "script", "facebook-jssdk");
 
-    // Initialize Facebook SDK
     window.fbAsyncInit = function () {
       window.FB.init({
         appId: import.meta.env.VITE_FB_APP_ID,
@@ -36,23 +41,43 @@ const FacebookLoginButton = () => {
       return;
     }
 
-    window.FB.login(
-      (response: any) => {
-        if (response.authResponse) {
-          console.log("✅ Login success", response);
-          window.FB.api(
-            "/me",
-            { fields: "name,email,picture" },
-            (userInfo: any) => {
-              console.log("👤 User info:", userInfo);
-            }
-          );
-        } else {
-          console.log("❌ User cancelled login");
-        }
-      },
-      { scope: "public_profile,email" }
-    );
+
+
+  window.FB.login(
+    (response: any) => {
+      if (response.authResponse) {
+        console.log("✅ Login success", response);
+
+        window.FB.api(
+          "/me",
+          { fields: "name,email,picture" },
+          (userInfo: any) => {
+            console.log("👤 User info:", userInfo);
+
+            const userPayload = {
+              name: userInfo.name,
+              email: userInfo.email,
+              picture: userInfo.picture.data.url,
+              id: userInfo.id,
+            };
+
+            // ✅ Redux এ পাঠাও
+            dispatch(setFacebookUser(userPayload));
+
+            // ✅ LocalStorage এ রাখো
+            // localStorage.setItem("fbUser", JSON.stringify(userPayload));
+
+            // ✅ Navigate করো
+            navigate("/user");
+          }
+        );
+      } else {
+        console.log("❌ User cancelled login");
+      }
+    },
+    { scope: "public_profile,email" }
+  );
+
   };
 
   return (
