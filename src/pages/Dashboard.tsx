@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 const Dashboard = () => {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
-
+console.log('campaigns data',campaigns);
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
