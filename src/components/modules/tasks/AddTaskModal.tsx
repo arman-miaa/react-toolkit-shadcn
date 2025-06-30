@@ -15,6 +15,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { addTask } from "@/redux/features/task/taskSlice";
+import { useAppDispatch } from "@/redux/hook";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
@@ -22,10 +24,19 @@ import { useForm } from "react-hook-form";
 export function AddTaskModal() {
   const form = useForm();
 
-  const onSubmit = (data:any) => {
-    // This is where your form data will be logged to the console
-    console.log(data);
+  const dispatch = useAppDispatch();
+
+  const onSubmit = (data: any) => {
+    const formattedData = {
+      ...data,
+      dob: data.dob ? data.dob.toISOString() : null, // ✅ Date → string
+    };
+
+    dispatch(addTask(formattedData));
+
+    console.log("🔁 Dispatched Data:", formattedData);
   };
+  
 
   return (
     <Dialog>
