@@ -8,7 +8,13 @@ interface UserState {
   id: string;
 }
 
-const initialState: UserState | null = null;
+const initialState: UserState = {
+  name: "",
+  email: "",
+  picture: "",
+  id: "",
+};
+  
 
 const userSlice = createSlice({
   name: "user",
@@ -17,7 +23,7 @@ const userSlice = createSlice({
     setFacebookUser: (state, action: PayloadAction<UserState>) => {
       return action.payload;
     },
-    clearUser: () => null,
+    clearUser: () => initialState,
   },
 });
 

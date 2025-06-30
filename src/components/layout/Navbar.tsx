@@ -2,6 +2,9 @@ import { Link } from "react-router";
 import logo from "../../assets/logo.jpg";
 import { ModeToggle } from "../mode-toggle";
 import FacebookLoginButton from "../FacebookLoginButton";
+import GoogleLoginButton from "../GoogleLoginButton ";
+import Logout from "../Logout";
+import GoogleAdsLoginButton from "../GoogleAdsLoginButton";
 
 const Navbar = () => {
   return (
@@ -15,7 +18,10 @@ const Navbar = () => {
         <h3 className="text-xl font-semibold text-gray-800">Task Master</h3>
       <Link to="/">Task</Link>
         <Link to="/user">User</Link>
-        <FacebookLoginButton/>
+        <FacebookLoginButton />
+        <GoogleLoginButton />
+        <Logout />
+        <GoogleAdsLoginButton/>
       </div>
       <div>
         <ModeToggle/>
