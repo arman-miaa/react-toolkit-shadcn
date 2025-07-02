@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "./features/counter/counterSlice";
 import taskReducer from "./features/task/taskSlice";
-import userReducer from "./features/user/userSlice"; // ✅
+import userReducer from "./features/user/userSlice"; 
 
 const store = configureStore({
   reducer: {
     counter: counterReducer,
     todo: taskReducer,
-    user: userReducer, // ✅ add here
+    user: userReducer,
   },
 });
 

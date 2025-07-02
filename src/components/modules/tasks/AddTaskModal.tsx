@@ -1,12 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+import {  Dialog,DialogContent,DialogDescription,DialogFooter,DialogHeader,DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
@@ -16,30 +10,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { addTask } from "@/redux/features/task/taskSlice";
-import { useAppDispatch } from "@/redux/hook";
+import { selectUsers } from "@/redux/features/user/userSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hook";
+import { ITask } from "@/types/task";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useState } from "react";
+import {  FieldValues, SubmitHandler, useForm } from "react-hook-form";
 
 export function AddTaskModal() {
   const form = useForm();
-
+  const [open, setOpen] = useState(false);
   const dispatch = useAppDispatch();
 
-  const onSubmit = (data: any) => {
-    const formattedData = {
-      ...data,
-      dob: data.dob ? data.dob.toISOString() : null, // ✅ Date → string
-    };
+  const users = useAppSelector(selectUsers); 
 
-    dispatch(addTask(formattedData));
 
-    console.log("🔁 Dispatched Data:", formattedData);
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {  
+    dispatch(addTask(data as ITask));
+    setOpen(false);
   };
   
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Add Task</Button>
       </DialogTrigger>
@@ -89,13 +83,43 @@ export function AddTaskModal() {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Priority" />
+                        <SelectValue
+                          className="w-full "
+                          placeholder="Select Priority"
+                        />
                       </SelectTrigger>
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Low">Low</SelectItem>
-                      <SelectItem value="Medium">Medium</SelectItem>
-                      <SelectItem value="High">High</SelectItem>
+                    <SelectContent className="">
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="assignedTo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Assign To</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          className="w-full "
+                          placeholder="Select user"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="">
+                      {users.map((user) => (
+                        <SelectItem value={user.id}>{user.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </FormItem>
@@ -104,10 +128,10 @@ export function AddTaskModal() {
 
             <FormField
               control={form.control}
-              name="dob"
+              name="dueDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Date of birth</FormLabel>
+                  <FormLabel>dueDate</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -121,7 +145,7 @@ export function AddTaskModal() {
                           {field.value ? (
                             format(field.value, "PPP")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Pick a dueDate</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -131,19 +155,23 @@ export function AddTaskModal() {
                       <Calendar
                         mode="single"
                         selected={field.value}
-                        onSelect={field.onChange}
-                     
+                        onSelect={(date) => {
+                          if (date) {
+                            field.onChange(date.toISOString());
+                          }
+                        }}
                         captionLayout="dropdown"
                       />
                     </PopoverContent>
                   </Popover>
-                 
                 </FormItem>
               )}
             />
 
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button className="mt-4" type="submit">
+                Save changes
+              </Button>
             </DialogFooter>
           </form>
         </Form>

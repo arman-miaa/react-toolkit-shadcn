@@ -1,46 +1,25 @@
-import { useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "../redux/store";
+import { AddUserModal } from "@/components/modules/users/AddUserModal";
+import UserCard from "@/components/modules/users/UserCard";
 
-interface UserState {
-  name: string;
-  email: string;
-  picture: string;
-  id: string;
-}
+import { selectUsers } from "@/redux/features/user/userSlice"; 
+import { useAppSelector } from "@/redux/hook";
 
 const User = () => {
-  const user = useSelector<RootState, UserState | null>((state) => state.user);
+  const users = useAppSelector(selectUsers); 
 
-  useEffect(() => {
-    fetch("http://localhost:5000/campaigns", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tokens: {
-          refresh_token: "user_refresh_token_here",
-        },
-        customerId: "1234567890",
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => console.log("Campaigns:", data))
-      .catch((error) => console.error("Error fetching campaigns:", error));
-  }, []); // empty dependency array = runs only once
-
-  if (!user) return <p>Loading...</p>;
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold">Welcome, {user.name}</h1>
-      <p>Email: {user.email}</p>
-      <img
-        src={user.picture}
-        alt={user.name}
-        className="w-24 h-24 rounded-full"
-      />
+    <div className="container mx-auto">
+      <div className="flex justify-end items-center my-4 gap-5">
+        <h1 className="mr-auto text-xl font-semibold">User</h1>
+        <AddUserModal />
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {users.map((user) => (
+          <UserCard key={user.id} user={user} />
+        ))}
+      </div>
     </div>
   );
 };

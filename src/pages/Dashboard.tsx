@@ -3,34 +3,50 @@ import { useEffect, useState } from "react";
 const Dashboard = () => {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
-console.log('campaigns data',campaigns);
+
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
         const token = localStorage.getItem("ads_token");
-        console.log("Fetching campaigns with token:", token);
+       
+        console.log("Token:", token);
 
         const res = await fetch("http://localhost:5000/campaigns", {
           headers: {
             Authorization: `Bearer ${token}`,
+     
           },
         });
 
-        console.log("Response status:", res.status);
-
         if (!res.ok) {
           const errorData = await res.json();
-          console.error("Error response data:", errorData);
-          throw new Error(errorData.error || "Failed to fetch campaigns");
+          const errorMessage =
+            errorData?.error?.error?.message ||
+            errorData?.error?.message ||
+            errorData?.message ||
+            "Failed to fetch campaigns";
+
+          throw new Error(errorMessage);
         }
 
         const data = await res.json();
-        console.log("Campaigns data received:", data);
-
-        setCampaigns(data.results || data); // adjust according to response shape
+        setCampaigns(data.results || data);
       } catch (err: any) {
-        console.error("Fetch campaigns error:", err);
-        setError(err.message);
+        let errorMessage = "";
+
+        if (typeof err === "string") {
+          errorMessage = err;
+        } else if (err instanceof Error) {
+          errorMessage = err.message;
+        } else {
+          try {
+            errorMessage = JSON.stringify(err, null, 2);
+          } catch {
+            errorMessage = "Unknown error occurred";
+          }
+        }
+
+        setError(errorMessage);
       }
     };
 
@@ -40,7 +56,7 @@ console.log('campaigns data',campaigns);
   return (
     <div>
       <h2>Google Ads Campaigns</h2>
-      {error && <p style={{ color: "red" }}>❌ {error}</p>}
+      {error && <p>❌ {error}</p>}
       {campaigns.length > 0 ? (
         <ul>
           {campaigns.map((campaign, idx) => (

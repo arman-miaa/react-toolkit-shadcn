@@ -1,4 +1,4 @@
-import { clearUser } from "@/redux/features/user/userSlice";
+import { clearUser } from "@/redux/features/user/userSlice2";
 import { useDispatch } from "react-redux";
 
 import { useNavigate } from "react-router";
